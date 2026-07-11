@@ -125,9 +125,9 @@ export default function Page() {
         Sign Up
       </Button>
       <div className="text-center text-sm text-muted-foreground">
-        Dont have an account?{" "}
-        <Link href="/auth/register" className="text-primary hover:underline">
-          Create New Account
+        Already have an account?{" "}
+        <Link href="/auth/login" className="text-primary hover:underline">
+          Login
         </Link>
       </div>
     </form>
