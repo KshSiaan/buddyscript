@@ -1,21 +1,25 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { fallbackAvatar } from "@/lib/extra";
-import { PlusSignIcon } from "@hugeicons/core-free-icons";
+import { SearchIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 
-export default function PeopleList() {
+export default function FriendList() {
   const users = [
-    {
-      name: "John Doe",
-      role: "Software Engineer",
-      active: false,
-    },
     {
       name: "Jane Smith",
       role: "Product Manager",
       active: true,
+    },
+    {
+      name: "John Doe",
+      role: "Software Engineer",
+      active: false,
     },
     {
       name: "Alice Johnson",
@@ -25,6 +29,14 @@ export default function PeopleList() {
   ];
   return (
     <div className="flex flex-col gap-4">
+      <div className="w-full">
+        <InputGroup>
+          <InputGroupInput placeholder="Search friends..." />
+          <InputGroupAddon>
+            <HugeiconsIcon icon={SearchIcon} />
+          </InputGroupAddon>
+        </InputGroup>
+      </div>
       {users.map((user) => (
         <Link href="#" className="" key={user.name}>
           <div className="flex items-center justify-between">
@@ -33,17 +45,19 @@ export default function PeopleList() {
                 <AvatarImage src={fallbackAvatar} />
               </Avatar>
               <div className="flex flex-col">
-                <p className="font-semibold">{user.name}</p>
+                <p className="font-semibold flex items-center gap-1">
+                  {user.name}{" "}
+                  {user.active && (
+                    <span className="size-2 bg-accent-foreground rounded-full" />
+                  )}
+                </p>
                 <p className="text-xs text-muted-foreground">{user.role}</p>
               </div>
             </div>
-            <Button
-              size="icon-xs"
-              className="hover:bg-accent-foreground hover:text-background transition-colors"
-              variant="outline"
-            >
-              <HugeiconsIcon icon={PlusSignIcon} />
-            </Button>
+
+            <p className="text-xs text-muted-foreground">
+              {user.active ? "Online" : "5 mins ago"}
+            </p>
           </div>
         </Link>
       ))}

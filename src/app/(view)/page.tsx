@@ -1,6 +1,9 @@
-import Navbar from "@/components/core/navbar";
-import React from "react";
+import Stories from "./_home/stories";
 
 export default function Home() {
-  return <>lol</>;
+  return (
+    <div className="">
+      <Stories />
+    </div>
+  );
 }
