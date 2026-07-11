@@ -45,7 +45,11 @@ export default function Navbar() {
           <Popover>
             <PopoverTrigger className="flex mx-0! items-center gap-4 py-2 rounded-lg justify-center hover:bg-secondary px-3 font-semibold text-foreground/80">
               <Avatar size="default">
-                <AvatarImage />
+                <AvatarImage
+                  src={
+                    "https://api.dicebear.com/10.x/lorelei/svg?backgroundColor=ffffff&seed=Felix"
+                  }
+                />
                 <AvatarFallback>UI</AvatarFallback>
               </Avatar>{" "}
               RAVEN
