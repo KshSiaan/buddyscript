@@ -11,7 +11,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Buddyscript",
+  title: "Buddy Script",
   description:
     "Buddyscript is a social media platform that allows users to connect with friends, share content, and engage in discussions.",
 };

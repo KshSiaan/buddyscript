@@ -9,15 +9,26 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { fallbackAvatar } from "@/lib/extra";
 import { HugeiconsIcon } from "@hugeicons/react";
 import FriendList from "./_home/friend-list";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 
 export default async function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const me = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!me?.session) {
+    return redirect("/auth/login");
+  }
+
   return (
     <main className="min-h-dvh w-full flex flex-col justify-start overflow-hidden!">
-      <Navbar />
+      <Navbar me={me.user} />
       <div className="w-full px-[16%] grid grid-cols-4 h-full flex-1 gap-4">
         <section className="w-full h-full pt-4 max-h-[90dvh] overflow-y-auto scrollbar-none space-y-4 scroll-fade-b">
           <Card className="border-0! ring-0!">
@@ -53,7 +64,7 @@ export default async function HomeLayout({
             </CardContent>
           </Card>
         </section>
-        <section className="col-span-2 scroll-fade-y max-h-[calc(100dvh-4rem)] overflow-x-auto scrollbar-none space-y-4 pt-4">
+        <section className="col-span-2 max-h-[calc(100dvh-4rem)] overflow-x-auto scrollbar-none space-y-4 pt-4">
           {children}
         </section>
         <section className="w-full h-full pt-4 max-h-[90dvh] overflow-y-auto scrollbar-none space-y-4 scroll-fade-b">

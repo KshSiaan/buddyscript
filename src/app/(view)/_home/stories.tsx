@@ -1,14 +1,15 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/lib/auth-client";
 import { fallbackAvatar } from "@/lib/extra";
 import { PlusSignIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import { useRef } from "react";
 export default function Stories() {
+  const { data } = useSession();
   const scrollRef = useRef<HTMLDivElement>(null);
-
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);

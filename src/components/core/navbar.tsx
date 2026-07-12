@@ -9,7 +9,13 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "../ui/popover";
-import { ChevronDown, SearchIcon } from "@hugeicons/core-free-icons";
+import {
+  ChevronDown,
+  InformationCircleIcon,
+  LogoutSquare01Icon,
+  SearchIcon,
+  Settings01Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   InputGroup,
@@ -17,8 +23,33 @@ import {
   InputGroupInput,
 } from "../ui/input-group";
 import TabsUnderline from "./anim-tabs";
+import { Auth } from "better-auth";
+import { fallbackMyAvatar } from "@/lib/extra";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
-export default function Navbar() {
+export default function Navbar({
+  me,
+}: {
+  me: Auth["$Infer"]["Session"]["user"];
+}) {
+  const navs = [
+    {
+      icon: Settings01Icon,
+      label: "Settings",
+      danger: false,
+    },
+    {
+      icon: InformationCircleIcon,
+      label: "Help & Support",
+      danger: false,
+    },
+    {
+      icon: LogoutSquare01Icon,
+      label: "Log Out",
+      danger: true,
+    },
+  ];
   return (
     <nav className="bg-card px-[16%] h-16">
       <div className="flex items-center justify-between">
@@ -45,11 +76,7 @@ export default function Navbar() {
           <Popover>
             <PopoverTrigger className="flex mx-0! items-center gap-4 py-2 rounded-lg justify-center hover:bg-secondary px-3 font-semibold text-foreground/80">
               <Avatar size="default">
-                <AvatarImage
-                  src={
-                    "https://api.dicebear.com/10.x/lorelei/svg?backgroundColor=ffffff&seed=Felix"
-                  }
-                />
+                <AvatarImage src={me?.image || fallbackMyAvatar} />
                 <AvatarFallback>UI</AvatarFallback>
               </Avatar>{" "}
               Raven
@@ -57,8 +84,40 @@ export default function Navbar() {
             </PopoverTrigger>
             <PopoverContent align="end" side="bottom" sideOffset={5}>
               <PopoverHeader>
-                <PopoverTitle>RAVEN</PopoverTitle>
+                <div className="flex gap-2 items-center justify-start">
+                  <Avatar size="lg">
+                    <AvatarImage src={me?.image || fallbackMyAvatar} />
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <p className="font-semibold">{me?.name}</p>
+                    <Link
+                      href="/profile"
+                      className="text-xs text-muted-foreground hover:text-primary"
+                    >
+                      View Profile
+                    </Link>
+                  </div>
+                </div>
               </PopoverHeader>
+              <div className="flex flex-col gap-2 w-full h-full">
+                {navs.map((nav) => (
+                  <Link
+                    href={`#`}
+                    key={nav.label}
+                    className={cn(
+                      `flex items-center gap-2 p-2 rounded-lg justify-between hover:text-primary`,
+                      nav.danger && "hover:text-destructive",
+                    )}
+                  >
+                    <div className="whitespace-nowrap flex items-center gap-4">
+                      <div className="p-2 rounded-full bg-primary/10 text-primary">
+                        <HugeiconsIcon icon={nav.icon} size={20} />
+                      </div>{" "}
+                      {nav.label}
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </PopoverContent>
           </Popover>
         </div>
