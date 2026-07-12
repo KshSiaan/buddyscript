@@ -52,7 +52,7 @@ export default function Navbar() {
                 />
                 <AvatarFallback>UI</AvatarFallback>
               </Avatar>{" "}
-              RAVEN
+              Raven
               <HugeiconsIcon size="18" icon={ChevronDown} />
             </PopoverTrigger>
             <PopoverContent align="end" side="bottom" sideOffset={5}>

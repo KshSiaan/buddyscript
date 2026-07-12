@@ -6,9 +6,9 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 export default function Stories() {
   return (
-    <div className="h-48 w-full mt-4 overflow-x-auto overflow-y-hidden scrollbar-none rounded-lg overflow-hidden ">
+    <div className="h-38 w-full mt-4 overflow-x-auto overflow-y-hidden scrollbar-none rounded-lg overflow-hidden scroll-fade-x">
       <div className="flex gap-4 w-max">
-        <div className="size-48 shrink-0 bg-foreground rounded-lg overflow-hidden relative">
+        <div className="size-38 shrink-0 bg-foreground rounded-lg overflow-hidden relative">
           <Image
             src="https://api.dicebear.com/10.x/lorelei/svg?backgroundColor=ffffff&seed=Felix"
             unoptimized
@@ -29,7 +29,7 @@ export default function Stories() {
         </div>
         {Array.from({ length: 10 }).map((_, index) => (
           <div
-            className="size-48 shrink-0 bg-foreground rounded-lg overflow-hidden relative"
+            className="size-38 shrink-0 bg-foreground rounded-lg overflow-hidden relative"
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             key={index}
           >
@@ -42,7 +42,8 @@ export default function Stories() {
               alt="myAvatar"
               height={224}
               width={224}
-              className="h-full w-full hover:brightness-50 transition-all cursor-grab active:cursor-grabbing"
+              draggable={false}
+              className="h-full w-full hover:brightness-50 transition-all cursor-grab active:cursor-grabbing select-none "
             />
           </div>
         ))}
