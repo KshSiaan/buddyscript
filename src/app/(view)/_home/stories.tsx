@@ -1,12 +1,48 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { fallbackAvatar } from "@/lib/extra";
 import { PlusSignIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
+import { useRef } from "react";
 export default function Stories() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
+  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!scrollRef.current) return;
+
+    isDragging.current = true;
+    startX.current = e.pageX;
+    scrollLeft.current = scrollRef.current.scrollLeft;
+  };
+
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging.current || !scrollRef.current) return;
+
+    e.preventDefault();
+
+    const walk = e.pageX - startX.current;
+    scrollRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+
+  const stopDragging = () => {
+    isDragging.current = false;
+  };
   return (
-    <div className="h-38 w-full mt-4 overflow-x-auto overflow-y-hidden scrollbar-none rounded-lg overflow-hidden scroll-fade-x">
+    // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
+    <div
+      ref={scrollRef}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={stopDragging}
+      onMouseLeave={stopDragging}
+      className="h-38 w-full mt-4 overflow-x-auto overflow-y-hidden scrollbar-none rounded-lg overflow-hidden scroll-fade-x"
+    >
       <div className="flex gap-4 w-max">
         <div className="size-38 shrink-0 bg-foreground rounded-lg overflow-hidden relative">
           <Image
@@ -33,7 +69,10 @@ export default function Stories() {
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             key={index}
           >
-            <Avatar size="default" className={"absolute top-2 right-2 z-20"}>
+            <Avatar
+              size="default"
+              className={"absolute top-2 right-2 z-20 border-primary border-2"}
+            >
               <AvatarImage src={fallbackAvatar} />
               <AvatarFallback>UI</AvatarFallback>
             </Avatar>

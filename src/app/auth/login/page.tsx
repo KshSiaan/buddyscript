@@ -24,13 +24,15 @@ export default function Page() {
       confirmPassword: "",
       firstName: "",
       lastName: "",
-      username: "",
     },
   });
   return (
-    <form className="flex flex-col gap-2 w-full">
+    <form
+      className="flex flex-col gap-2 w-full"
+      onSubmit={form.handleSubmit((data) => console.log(data))}
+    >
       <FieldGroup>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2  gap-4">
           <Controller
             name="firstName"
             control={form.control}
@@ -122,7 +124,7 @@ export default function Page() {
         />
       </FieldGroup>
       <Button type="submit" className="w-full" size="lg">
-        Sign Up
+        Login now
       </Button>
       <div className="text-center text-sm text-muted-foreground">
         Dont have an account?{" "}

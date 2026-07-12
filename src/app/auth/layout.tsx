@@ -66,7 +66,7 @@ export default function Layout({
               <DetectRoute />
             </Suspense>
           </CardHeader>
-          <CardContent className="flex flex-col gap-6 justify-center items-center py-6">
+          <CardContent className="flex flex-col gap-6 justify-center items-center py-6 pt-0!">
             <Button variant="outline" className="w-full">
               <FcGoogle />
               Sign-in with google
@@ -76,7 +76,7 @@ export default function Layout({
               <span>or</span>
               <Separator className="w-full border-muted border" />
             </div>
-            <div className=" w-full">{children}</div>
+            <div className="w-full">{children}</div>
           </CardContent>
         </Card>
       </div>

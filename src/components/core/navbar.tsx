@@ -20,7 +20,7 @@ import TabsUnderline from "./anim-tabs";
 
 export default function Navbar() {
   return (
-    <nav className="bg-card px-[16%]">
+    <nav className="bg-card px-[16%] h-16">
       <div className="flex items-center justify-between">
         <div className="text-lg font-bold text-foreground">
           <Image

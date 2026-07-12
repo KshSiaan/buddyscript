@@ -10,16 +10,16 @@ import { fallbackAvatar } from "@/lib/extra";
 import { HugeiconsIcon } from "@hugeicons/react";
 import FriendList from "./_home/friend-list";
 
-export default function HomeLayout({
+export default async function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <main className="min-h-dvh w-full flex flex-col justify-start">
+    <main className="min-h-dvh w-full flex flex-col justify-start overflow-hidden!">
       <Navbar />
       <div className="w-full px-[16%] grid grid-cols-4 h-full flex-1 gap-4">
-        <section className="w-full h-full pt-4 max-h-[90dvh] overflow-y-auto scrollbar-none space-y-4">
+        <section className="w-full h-full pt-4 max-h-[90dvh] overflow-y-auto scrollbar-none space-y-4 scroll-fade-b">
           <Card className="border-0! ring-0!">
             <CardHeader>
               <CardTitle className="text-xl">Explore</CardTitle>
@@ -53,8 +53,10 @@ export default function HomeLayout({
             </CardContent>
           </Card>
         </section>
-        <section className="col-span-2">{children}</section>
-        <section className="w-full h-full pt-4 max-h-[90dvh] overflow-y-auto scrollbar-none space-y-4">
+        <section className="col-span-2 scroll-fade-y max-h-[calc(100dvh-4rem)] overflow-x-auto scrollbar-none space-y-4 pt-4">
+          {children}
+        </section>
+        <section className="w-full h-full pt-4 max-h-[90dvh] overflow-y-auto scrollbar-none space-y-4 scroll-fade-b">
           <Card>
             <CardHeader className="flex justify-between items-center">
               <CardTitle>You Might Like</CardTitle>

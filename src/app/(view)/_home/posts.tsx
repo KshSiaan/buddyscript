@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +14,15 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import {
+  Message,
+  MessageAvatar,
+  MessageContent,
+  MessageHeader,
+} from "@/components/ui/message";
+import { fallbackAvatar } from "@/lib/extra";
+import {
   Comment03Icon,
+  Image02Icon,
   MoreVerticalCircle01Icon,
   SentIcon,
   Share01Icon,
@@ -56,13 +65,13 @@ export default function Posts() {
       <CardFooter className="grid grid-cols-3 gap-4">
         <button
           type="button"
-          className="w-full p-2 flex justify-center items-center gap-2 text-xs font-light text-muted-foreground hover:text-primary hover:bg-accent-foreground/10 transition-colors rounded-lg"
+          className="w-full p-2 flex justify-center items-center gap-2 text-xs font-light text-muted-foreground hover:text-primary hover:bg-primary/10  transition-colors rounded-lg"
         >
           <HugeiconsIcon icon={ThumbsUpEllipseIcon} size={20} /> Like
         </button>
         <button
           type="button"
-          className="w-full p-2 flex justify-center items-center gap-2 text-xs font-light text-muted-foreground hover:text-accent-foreground hover:bg-primary/10 transition-colors rounded-lg"
+          className="w-full p-2 flex justify-center items-center gap-2 text-xs font-light text-muted-foreground hover:text-accent-foreground hover:bg-accent-foreground/10 transition-colors rounded-lg"
         >
           <HugeiconsIcon icon={Comment03Icon} size={20} />
           Comment
@@ -91,6 +100,11 @@ export default function Posts() {
                 <AvatarFallback>UI</AvatarFallback>
               </Avatar>
             </InputGroupAddon>
+            <InputGroupAddon align="inline-end">
+              <Button size="icon-sm" variant="ghost">
+                <HugeiconsIcon icon={Image02Icon} />
+              </Button>
+            </InputGroupAddon>
           </InputGroup>
           <Button
             size="icon"
@@ -100,6 +114,40 @@ export default function Posts() {
             <HugeiconsIcon icon={SentIcon} />
           </Button>
         </div>
+        <button
+          type="button"
+          className="text-xs py-2 text-muted-foreground hover:text-primary my-2"
+        >
+          View Comments (4)
+        </button>
+        <Message>
+          <MessageAvatar>
+            <Avatar>
+              <AvatarImage src={fallbackAvatar} alt="user#1" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </MessageAvatar>
+          <MessageContent>
+            <Bubble variant="outline">
+              <BubbleContent className="text-xs text-muted-foreground">
+                <div className="flex items-center text-xs text-foreground font-semibold">
+                  John Doe
+                </div>
+                How can I help you today? lorem ipsum dolor sit amet consectetur
+                adipisicing elit. Quisquam, quod. Lorem ipsum dolor sit amet
+                consectetur adipisicing elit. Quisquam,olor sit amet consectetur
+                adipisicing elit. Quisquam, quod. Lorem ipsum dolor sit amet
+                consectetur adipisicing elit. Quisquam,olor sit amet consectetur
+                adipisicing elit. Quisquam, quod. Lorem ipsum dolor sit amet
+                consectetur adipisicing elit. Quisquam,olor sit amet consectetur
+                adipisicing elit. Quisquam, quod. Lorem ipsum dolor sit amet
+                consectetur adipisicing elit. Quisquam,olor sit amet consectetur
+                adipisicing elit. Quisquam, quod. Lorem ipsum dolor sit amet
+                consectetur adipisicing elit. Quisquam,
+              </BubbleContent>
+            </Bubble>
+          </MessageContent>
+        </Message>
       </CardContent>
     </Card>
   );

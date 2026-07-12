@@ -3,7 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/base/theme-provider";
-
+import { GooeyToaster } from "@/components/ui/goey-toaster";
 const poppins = Poppins({
   subsets: ["latin", "devanagari", "latin-ext"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -27,7 +27,7 @@ export default function RootLayout({
       lang="en"
       className={cn("h-full antialiased", poppins.className)}
     >
-      <body className="min-h-dvh w-dvw overflow-x-hidden flex flex-col">
+      <body className="min-h-dvh w-dvw overflow-x-hidden! flex flex-col">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -36,6 +36,7 @@ export default function RootLayout({
           storageKey="buddyscript-theme"
         >
           {children}
+          <GooeyToaster position="top-left" bounce={0.6} />
         </ThemeProvider>
       </body>
     </html>
