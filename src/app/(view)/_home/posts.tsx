@@ -8,8 +8,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import {
   Comment03Icon,
   MoreVerticalCircle01Icon,
+  SentIcon,
   Share01Icon,
   ThumbsUpEllipseIcon,
 } from "@hugeicons/core-free-icons";
@@ -68,6 +74,33 @@ export default function Posts() {
           <HugeiconsIcon icon={Share01Icon} size={20} /> Share
         </button>
       </CardFooter>
+      <CardContent className="">
+        <div className="flex items-center gap-2 justify-between">
+          <InputGroup>
+            <InputGroupInput
+              placeholder="Write a comment..."
+              className="text-xs!"
+            />
+            <InputGroupAddon>
+              <Avatar size="sm">
+                <AvatarImage
+                  src={
+                    "https://api.dicebear.com/10.x/lorelei/svg?backgroundColor=ffffff&seed=Felix"
+                  }
+                />
+                <AvatarFallback>UI</AvatarFallback>
+              </Avatar>
+            </InputGroupAddon>
+          </InputGroup>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="hover:bg-accent-foreground hover:text-background transition-colors"
+          >
+            <HugeiconsIcon icon={SentIcon} />
+          </Button>
+        </div>
+      </CardContent>
     </Card>
   );
 }
