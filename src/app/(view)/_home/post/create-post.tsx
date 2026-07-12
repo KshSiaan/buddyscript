@@ -14,19 +14,45 @@ import {
   ClipIcon,
   Image02Icon,
   LicenseIcon,
+  Refresh01Icon,
   SentIcon,
   Video01Icon,
 } from "@hugeicons/core-free-icons";
+import { gooeyToast } from "goey-toast";
+import {
+  Popover,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import Image from "next/image";
+import { useCreatePost } from "@/lib/api/post";
+import { clientCompressImage } from "@/lib/extra";
 export default function CreatePost() {
   const [expanded, setExpanded] = React.useState(false);
+  const [selectedImages, setSelectedImages] = React.useState<File[]>([]);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-
+  const imageInputRef = React.useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (expanded && textareaRef.current) {
       textareaRef.current.focus();
     }
   }, [expanded]);
 
+  const { mutate: createPost, isPending } = useCreatePost();
+
+  const submitPost = async () => {
+    const compressedImages = await Promise.all(
+      selectedImages.map((file) => clientCompressImage(file, 1)),
+    );
+    const allImages = compressedImages.filter((img) => img !== null) as File[];
+    createPost({
+      text: textareaRef.current?.value || "",
+      images: allImages,
+      is_private: false,
+    });
+  };
   return (
     <ExpandableScreen
       onExpandChange={setExpanded}
@@ -101,14 +127,87 @@ export default function CreatePost() {
           />
           <div className="w-full flex justify-between lg:justify-end items-center gap-4">
             <div className="space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-xs font-light text-rose-600"
-              >
-                <HugeiconsIcon icon={Image02Icon} className="" />
-                <span className="hidden lg:block">Image</span>
-              </Button>
+              <input
+                type="file"
+                id="image-input"
+                className="hidden"
+                multiple
+                accept="image/*"
+                ref={imageInputRef}
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length > 5) {
+                    gooeyToast.error("You can only select up to 5 images.");
+                    return;
+                  } else if (files && files.length > 0) {
+                    setSelectedImages(Array.from(files));
+                  }
+                }}
+              />
+
+              {selectedImages.length === 0 ? (
+                <label htmlFor="image-input">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs font-light text-rose-600"
+                    onClick={() => {
+                      imageInputRef.current?.click();
+                    }}
+                  >
+                    <HugeiconsIcon icon={Image02Icon} />
+                    <span className="hidden lg:block">Image</span>
+                  </Button>
+                </label>
+              ) : (
+                <Popover>
+                  <PopoverTrigger
+                    openOnHover
+                    render={
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs font-light text-rose-600"
+                      />
+                    }
+                  >
+                    <HugeiconsIcon icon={Image02Icon} />
+                    <span className="hidden lg:block">
+                      Selected Image{selectedImages.length > 1 ? "s" : ""}(
+                      {selectedImages.length})
+                    </span>
+                  </PopoverTrigger>
+                  <PopoverContent className="min-w-lg!">
+                    <PopoverHeader className="flex flex-row! items-center justify-between">
+                      <PopoverTitle>Selected Images:</PopoverTitle>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedImages([]);
+                        }}
+                      >
+                        <HugeiconsIcon icon={Refresh01Icon} />
+                        Reset
+                      </Button>
+                    </PopoverHeader>
+                    <div className="grid grid-cols-5 gap-4">
+                      {selectedImages.map((file, index) => (
+                        <Image
+                          key={index}
+                          src={URL.createObjectURL(file)}
+                          alt={`Selected ${index}`}
+                          width={100}
+                          height={100}
+                          className="w-full h-full aspect-square object-contain rounded-lg"
+                        />
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
               <Button
                 variant="ghost"
                 className="text-blue-500 text-xs font-light"
@@ -137,7 +236,13 @@ export default function CreatePost() {
                 <span className="hidden lg:block">Article</span>
               </Button>
             </div>
-            <Button>
+            <Button
+              onClick={() => {
+                submitPost();
+              }}
+              size="sm"
+              className="text-xs"
+            >
               Post <HugeiconsIcon icon={SentIcon} />
             </Button>
           </div>

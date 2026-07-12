@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/base/theme-provider";
 import { GooeyToaster } from "@/components/ui/goey-toaster";
+import GodProvider from "@/provider/god-provider";
 const poppins = Poppins({
   subsets: ["latin", "devanagari", "latin-ext"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -35,7 +36,7 @@ export default function RootLayout({
           disableTransitionOnChange
           storageKey="buddyscript-theme"
         >
-          {children}
+          <GodProvider>{children}</GodProvider>
           <GooeyToaster position="top-left" bounce={0.6} />
         </ThemeProvider>
       </body>
