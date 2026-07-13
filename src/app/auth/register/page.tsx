@@ -15,8 +15,10 @@ import type z from "zod";
 import Link from "next/link";
 import { signUp } from "@/lib/auth-client";
 import { gooeyToast } from "goey-toast";
+import { useState } from "react";
 
 export default function Page() {
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -29,21 +31,23 @@ export default function Page() {
     },
   });
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
-    console.log(data);
     const finalData = {
       name: `${data.firstName} ${data.lastName}`,
       email: data.email,
       password: data.password,
     };
+
+    setIsLoading(true);
+
     try {
-      signUp.email(finalData, {
-        onSuccess: () => {
-          gooeyToast.success("User registered successfully!");
-          window.location.href = "/";
-        },
-      });
+      await signUp.email(finalData);
+      gooeyToast.success("User registered successfully!");
+      window.location.href = "/";
     } catch (error) {
-      console.error("Error registering user:", error);
+      console.error(error);
+      gooeyToast.error("Registration failed");
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -160,8 +164,8 @@ export default function Page() {
           )}
         />
       </FieldGroup>
-      <Button type="submit" className="w-full" size="lg">
-        Sign Up
+      <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+        {isLoading ? "Creating Account..." : "Sign Up"}
       </Button>
       <div className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}

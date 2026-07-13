@@ -23,3 +23,8 @@ export async function clientCompressImage(file: File, maxSize: number) {
     console.log(error);
   }
 }
+
+
+export function rejectResponse({ error, additional_error, status = 400 }:{ error: string; additional_error?: any; status?: number }) {
+  return Response.json({ ok:false, message:error,error:additional_error}, { status });
+}

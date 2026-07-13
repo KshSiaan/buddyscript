@@ -38,7 +38,9 @@ function useExpandableScreen() {
 interface ExpandableScreenProps {
   children: ReactNode;
   defaultExpanded?: boolean;
+  expanded?: boolean;
   onExpandChange?: (expanded: boolean) => void;
+  onBeforeCollapse?: () => void;
   layoutId?: string;
   triggerRadius?: string;
   contentRadius?: string;
@@ -49,21 +51,32 @@ interface ExpandableScreenProps {
 export function ExpandableScreen({
   children,
   defaultExpanded = false,
+  expanded,
   onExpandChange,
   layoutId = "expandable-card",
   triggerRadius = "100px",
   contentRadius = "24px",
   animationDuration = 0.3,
   lockScroll = true,
+  onBeforeCollapse,
 }: ExpandableScreenProps) {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
+
+  const isExpanded = expanded !== undefined ? expanded : internalExpanded;
   const expand = () => {
-    setIsExpanded(true);
+    if (expanded === undefined) {
+      setInternalExpanded(true);
+    }
     onExpandChange?.(true);
   };
 
   const collapse = () => {
-    setIsExpanded(false);
+    onBeforeCollapse?.();
+
+    if (expanded === undefined) {
+      setInternalExpanded(false);
+    }
+
     onExpandChange?.(false);
   };
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>

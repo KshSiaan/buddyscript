@@ -31,7 +31,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 
-export default function Posts() {
+export default async function Posts() {
   return (
     <Card>
       <CardHeader className="flex justify-between items-center">

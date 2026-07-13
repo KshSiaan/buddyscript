@@ -1,10 +1,11 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ExpandableScreen,
   ExpandableScreenContent,
   ExpandableScreenTrigger,
+  useExpandableScreen,
 } from "@/components/ui/expandable-screen";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -29,32 +30,95 @@ import {
 import Image from "next/image";
 import { useCreatePost } from "@/lib/api/post";
 import { clientCompressImage } from "@/lib/extra";
+import { Switch } from "@/components/ui/switch";
+import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
+
 export default function CreatePost() {
   const [expanded, setExpanded] = React.useState(false);
+  const [submitState, setSubmitState] = React.useState<
+    "idle" | "compressing" | "submitting"
+  >("idle");
   const [selectedImages, setSelectedImages] = React.useState<File[]>([]);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const imageInputRef = React.useRef<HTMLInputElement>(null);
+  const [isPrivate, setIsPrivate] = React.useState(false);
+  const navig = useRouter();
   useEffect(() => {
-    if (expanded && textareaRef.current) {
-      textareaRef.current.focus();
-    }
+    if (!expanded) return;
+    if (!textareaRef.current) return;
+
+    const draft = localStorage.getItem("draft");
+    if (!draft) return;
+
+    const { text, is_private } = JSON.parse(draft);
+
+    textareaRef.current.value = text;
+    setIsPrivate(is_private);
+
+    textareaRef.current.focus();
   }, [expanded]);
 
   const { mutate: createPost, isPending } = useCreatePost();
 
   const submitPost = async () => {
+    if (selectedImages.length > 5) {
+      gooeyToast.error("You can only select up to 5 images.");
+      return;
+    }
+    if (selectedImages.length === 0 && !textareaRef.current?.value) {
+      gooeyToast.error("Please enter some text or select an image.");
+      return;
+    }
+    setSubmitState("compressing");
     const compressedImages = await Promise.all(
       selectedImages.map((file) => clientCompressImage(file, 1)),
-    );
-    const allImages = compressedImages.filter((img) => img !== null) as File[];
-    createPost({
-      text: textareaRef.current?.value || "",
-      images: allImages,
-      is_private: false,
+    ).catch((err) => {
+      gooeyToast.error("Failed to compress images.");
+      setSubmitState("idle");
+      return [];
     });
+
+    setSubmitState("submitting");
+    const allImages = compressedImages.filter((img) => img !== null) as File[];
+
+    createPost(
+      {
+        text: textareaRef.current?.value || "",
+        images: allImages,
+        is_private: isPrivate,
+      },
+      {
+        onSuccess: (res) => {
+          setSubmitState("idle");
+          setSelectedImages([]);
+          if (textareaRef.current) {
+            textareaRef.current.value = "";
+          }
+          setIsPrivate(false);
+          gooeyToast.success(res?.message || "Post created successfully!");
+          navig.refresh();
+          setExpanded(false);
+        },
+        onError: (err) => {
+          gooeyToast.error(err?.message || "Failed to create post");
+          setSubmitState("idle");
+        },
+      },
+    );
   };
   return (
     <ExpandableScreen
+      onBeforeCollapse={() => {
+        localStorage.setItem(
+          "draft",
+          JSON.stringify({
+            text: textareaRef.current?.value ?? "",
+            is_private: isPrivate,
+          }),
+        );
+      }}
+      expanded={expanded}
       onExpandChange={setExpanded}
       layoutId="cta-card"
       triggerRadius="100px"
@@ -98,7 +162,7 @@ export default function CreatePost() {
                     className="text-purple-600"
                   />
                 </Button>
-                <Button size="icon-sm">
+                <Button size="icon-sm" disabled={isPending}>
                   <HugeiconsIcon icon={SentIcon} />
                 </Button>
               </div>
@@ -126,6 +190,15 @@ export default function CreatePost() {
             placeholder="Write here..."
           />
           <div className="w-full flex justify-between lg:justify-end items-center gap-4">
+            <div className="p-2 rounded-lg space-x-2 flex items-center justify-center border-2 border-muted-foreground/20 text-xs">
+              <span>Public</span>
+              <Switch
+                checked={isPrivate}
+                onCheckedChange={setIsPrivate}
+                className="data-checked:bg-foreground! bg-primary!"
+              />
+              <span>Private</span>
+            </div>
             <div className="space-x-4">
               <input
                 type="file"
@@ -196,6 +269,7 @@ export default function CreatePost() {
                     <div className="grid grid-cols-5 gap-4">
                       {selectedImages.map((file, index) => (
                         <Image
+                          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                           key={index}
                           src={URL.createObjectURL(file)}
                           alt={`Selected ${index}`}
@@ -242,8 +316,20 @@ export default function CreatePost() {
               }}
               size="sm"
               className="text-xs"
+              disabled={isPending}
             >
-              Post <HugeiconsIcon icon={SentIcon} />
+              {isPending ? (
+                <>
+                  <Spinner />{" "}
+                  {submitState === "compressing"
+                    ? "Minifying Images..."
+                    : "Submitting..."}
+                </>
+              ) : (
+                <>
+                  Post <HugeiconsIcon icon={SentIcon} />
+                </>
+              )}
             </Button>
           </div>
         </div>

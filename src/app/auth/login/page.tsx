@@ -11,65 +11,44 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { registerSchema } from "@/lib/schema/auth";
+import { loginSchema, registerSchema } from "@/lib/schema/auth";
 import type z from "zod";
 import Link from "next/link";
+import { useState } from "react";
+import { signIn } from "@/lib/auth-client";
+import { gooeyToast } from "@/components/ui/goey-toaster";
 
 export default function Page() {
-  const form = useForm<z.infer<typeof registerSchema>>({
-    resolver: zodResolver(registerSchema),
+  const [isLoading, setIsLoading] = useState(false);
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
-      confirmPassword: "",
-      firstName: "",
-      lastName: "",
     },
   });
+
+  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+    setIsLoading(true);
+
+    await signIn.email(data, {
+      onError: (err) => {
+        gooeyToast.error(err?.error?.message || "Login failed");
+        setIsLoading(false);
+      },
+      onSuccess: () => {
+        gooeyToast.success("Login successful!");
+        window.location.href = "/";
+      },
+    });
+  };
+
   return (
     <form
       className="flex flex-col gap-2 w-full"
-      onSubmit={form.handleSubmit((data) => console.log(data))}
+      onSubmit={form.handleSubmit(onSubmit)}
     >
       <FieldGroup>
-        <div className="grid grid-cols-2  gap-4">
-          <Controller
-            name="firstName"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>First Name</FieldLabel>
-                <Input
-                  {...field}
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Enter your first name"
-                  autoComplete="off"
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <Controller
-            name="lastName"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>Last Name</FieldLabel>
-                <Input
-                  {...field}
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Enter your last name"
-                  autoComplete="off"
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-        </div>
         <Controller
           name="email"
           control={form.control}
@@ -105,7 +84,7 @@ export default function Page() {
           )}
         />
         <Controller
-          name="aggreeToTerms"
+          name="rememberMe"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid} orientation="horizontal">
@@ -116,15 +95,15 @@ export default function Page() {
                   field.onChange(checked);
                 }}
               />
-              <FieldLabel>I agree to the terms and conditions</FieldLabel>
+              <FieldLabel>Remember me</FieldLabel>
 
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
       </FieldGroup>
-      <Button type="submit" className="w-full" size="lg">
-        Login now
+      <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+        {isLoading ? "Logging in..." : "Login"}
       </Button>
       <div className="text-center text-sm text-muted-foreground">
         Dont have an account?{" "}

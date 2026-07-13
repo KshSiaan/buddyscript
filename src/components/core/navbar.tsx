@@ -1,12 +1,10 @@
 "use client";
 import Image from "next/image";
-import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
   Popover,
   PopoverContent,
   PopoverHeader,
-  PopoverTitle,
   PopoverTrigger,
 } from "../ui/popover";
 import {
@@ -23,31 +21,28 @@ import {
   InputGroupInput,
 } from "../ui/input-group";
 import TabsUnderline from "./anim-tabs";
-import { Auth } from "better-auth";
+import type { Auth } from "better-auth";
 import { fallbackMyAvatar } from "@/lib/extra";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { signOut } from "@/lib/auth-client";
+import { gooeyToast } from "../ui/goey-toaster";
+import { useState } from "react";
 
 export default function Navbar({
   me,
 }: {
   me: Auth["$Infer"]["Session"]["user"];
 }) {
+  const [isLogingOut, setIsLoggingOut] = useState(false);
   const navs = [
     {
       icon: Settings01Icon,
       label: "Settings",
-      danger: false,
     },
     {
       icon: InformationCircleIcon,
       label: "Help & Support",
-      danger: false,
-    },
-    {
-      icon: LogoutSquare01Icon,
-      label: "Log Out",
-      danger: true,
     },
   ];
   return (
@@ -106,7 +101,6 @@ export default function Navbar({
                     key={nav.label}
                     className={cn(
                       `flex items-center gap-2 p-2 rounded-lg justify-between hover:text-primary`,
-                      nav.danger && "hover:text-destructive",
                     )}
                   >
                     <div className="whitespace-nowrap flex items-center gap-4">
@@ -117,6 +111,31 @@ export default function Navbar({
                     </div>
                   </Link>
                 ))}
+
+                <button
+                  type="button"
+                  disabled={isLogingOut}
+                  onClick={async () => {
+                    setIsLoggingOut(true);
+                    const data = await signOut();
+                    if (data.error) {
+                      gooeyToast.error(
+                        data.error.message || "Error signing out",
+                      );
+                      setIsLoggingOut(false);
+                    } else {
+                      gooeyToast.success("Signed out successfully");
+                      window.location.href = "/auth/login";
+                      setIsLoggingOut(false);
+                    }
+                  }}
+                  className="p-2 whitespace-nowrap flex items-center gap-4 group hover:text-destructive"
+                >
+                  <div className="p-2 rounded-full bg-primary/10 text-primary group-hover:text-destructive! group-hover:bg-destructive/10 group">
+                    <HugeiconsIcon icon={LogoutSquare01Icon} size={20} />
+                  </div>{" "}
+                  {isLogingOut ? "Signing out..." : "Sign Out"}
+                </button>
               </div>
             </PopoverContent>
           </Popover>

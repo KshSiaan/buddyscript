@@ -49,7 +49,9 @@ export default async function HomeLayout({
               </Button>
             </CardHeader>
             <CardContent>
-              <PeopleList />
+              <Suspense>
+                <PeopleList />
+              </Suspense>
             </CardContent>
           </Card>
           <Card>
@@ -60,12 +62,14 @@ export default async function HomeLayout({
               </Button>
             </CardHeader>
             <CardContent>
-              <EventList />
+              <Suspense>
+                <EventList />
+              </Suspense>
             </CardContent>
           </Card>
         </section>
         <section className="col-span-2 max-h-[calc(100dvh-4rem)] overflow-x-auto scrollbar-none space-y-4 pt-4">
-          {children}
+          <Suspense>{children}</Suspense>
         </section>
         <section className="w-full h-full pt-4 max-h-[90dvh] overflow-y-auto scrollbar-none space-y-4 scroll-fade-b">
           <Card>
@@ -101,7 +105,9 @@ export default async function HomeLayout({
               </Button>
             </CardHeader>
             <CardContent>
-              <FriendList />
+              <Suspense>
+                <FriendList />
+              </Suspense>
             </CardContent>
           </Card>
         </section>
