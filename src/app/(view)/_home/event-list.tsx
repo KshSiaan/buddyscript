@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { fallbackAvatar } from "@/lib/extra";
+import { fallbackMyAvatar } from "@/lib/extra";
 import { CheckIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";

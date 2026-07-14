@@ -1,9 +1,11 @@
-import { likes, post, user } from "@/db/schema";
-import { eq, getTableColumns, desc, count } from "drizzle-orm";
+import { comments, likes, post, user } from "@/db/schema";
+import { eq,and,exists, getTableColumns, desc, count } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { rejectResponse } from "@/lib/extra";
 import { createSupabaseStorageClient } from "@/lib/storage/supabase";
+import { NextRequest } from "next/server";
+
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({
@@ -87,7 +89,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const session = await auth.api.getSession({
     headers: request.headers,
   });
@@ -96,18 +98,35 @@ export async function GET(request: Request) {
   }
 
   try {
+    const whereCondition =request.nextUrl.searchParams.get("private") === "true" ? and(eq(post.authorId, session.user.id),eq(post.is_private, true)) : eq(post.is_private, false);
+
+
     const posts = await db
       .select({
         ...getTableColumns(post),
         author: getTableColumns(user),
         likes: count(likes.id),
+        isLiked: exists(
+      db
+        .select({ id: likes.id })
+        .from(likes)
+        .where(
+          and(
+            eq(likes.postId, post.id),
+            eq(likes.userId, session.user.id)
+          )
+        ),
+        ),
+        commentCount: count(comments.id),
       })
-      .from(post)
+      .from(post).where(whereCondition)
       .leftJoin(user, eq(user.id, post.authorId))
       .leftJoin(likes, eq(likes.postId, post.id))
+      .leftJoin(comments, eq(comments.postId, post.id))
       .groupBy(post.id, user.id)
       .orderBy(desc(post.createdAt))
-      .limit(6);
+      .limit(48);
+
 
     return Response.json({
       ok: true,
@@ -121,4 +140,16 @@ export async function GET(request: Request) {
       status: 500,
     });
   }
+}
+
+export async function DELETE(request: NextRequest) {
+  const session = await auth.api.getSession({
+    headers: request.headers,
+  });
+  if (!session?.session) {
+    return rejectResponse({ error: "Unauthorized", status: 401 });
+  }
+
+  const postId = request.nextUrl.searchParams.get("postId");
+
 }

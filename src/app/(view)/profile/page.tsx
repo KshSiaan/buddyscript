@@ -5,24 +5,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-import { useGetPosts } from "@/hooks/api/post";
+import { useGetPosts, useGetPrivatePosts } from "@/hooks/api/post";
 import { fallbackMyAvatar, timeAgoGenerate } from "@/lib/extra";
 import { MoreVerticalCircle01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AlertTriangleIcon } from "lucide-react";
-import Actions from "./actions";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useSession } from "@/lib/auth-client";
 
-export default function Posts() {
-  const { data: session } = useSession();
-  const { data, isPending, isError, error, isRefetching } = useGetPosts();
+export default function Page() {
+  const { data, isPending, isError, error } = useGetPrivatePosts();
 
   if (isPending) {
     return (
@@ -57,18 +48,9 @@ export default function Posts() {
             </p>
           </div>
         </div>
-        {session?.user.id === post.authorId && (
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={<Button variant="ghost" size="icon-sm" />}
-            >
-              <HugeiconsIcon icon={MoreVerticalCircle01Icon} />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        <Button variant="ghost" size="icon-sm">
+          <HugeiconsIcon icon={MoreVerticalCircle01Icon} />
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="text-sm line-clamp-4" id="text_content">
@@ -76,7 +58,6 @@ export default function Posts() {
         </div>
         <div className="" id="image_content"></div>
       </CardContent>
-      <Actions post={post} isRefetching={isRefetching} />
     </Card>
   ));
 }

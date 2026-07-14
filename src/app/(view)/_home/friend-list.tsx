@@ -4,7 +4,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { fallbackAvatar } from "@/lib/extra";
+import { fallbackMyAvatar } from "@/lib/extra";
 import { SearchIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
@@ -42,7 +42,7 @@ export default function FriendList() {
           <div className="flex items-center justify-between">
             <div className="flex gap-2 items-center justify-between">
               <Avatar size="lg">
-                <AvatarImage src={fallbackAvatar} />
+                <AvatarImage src={fallbackMyAvatar} />
               </Avatar>
               <div className="flex flex-col">
                 <p className="font-semibold flex items-center gap-1">

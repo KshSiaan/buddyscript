@@ -8,4 +8,7 @@ export interface Post {
   createdAt: Date;
   updatedAt: Date;
   authorId: string;
+  likes: number;
+  isLiked: boolean;
+  commentCount: number;
 }

@@ -2,7 +2,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth-client";
-import { fallbackAvatar } from "@/lib/extra";
+import { fallbackMyAvatar } from "@/lib/extra";
 import { PlusSignIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
@@ -47,7 +47,7 @@ export default function Stories() {
       <div className="flex gap-4 w-max">
         <div className="size-38 shrink-0 bg-foreground rounded-lg overflow-hidden relative">
           <Image
-            src="https://api.dicebear.com/10.x/lorelei/svg?backgroundColor=ffffff&seed=Felix"
+            src={fallbackMyAvatar}
             unoptimized
             alt="myAvatar"
             height={224}
@@ -74,7 +74,7 @@ export default function Stories() {
               size="default"
               className={"absolute top-2 right-2 z-20 border-primary border-2"}
             >
-              <AvatarImage src={fallbackAvatar} />
+              <AvatarImage src={fallbackMyAvatar} />
               <AvatarFallback>UI</AvatarFallback>
             </Avatar>
             <Image

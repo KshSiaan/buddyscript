@@ -13,9 +13,7 @@ export default function Home() {
           <CreatePost />
         </Suspense>
       </div>
-      {/* <Suspense> */}
       <Posts />
-      {/* </Suspense> */}
     </div>
   );
 }

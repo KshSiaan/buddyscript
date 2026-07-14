@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import PeopleList from "./_home/people-list";
 import EventList from "./_home/event-list";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { fallbackAvatar } from "@/lib/extra";
+import { fallbackMyAvatar } from "@/lib/extra";
 import { HugeiconsIcon } from "@hugeicons/react";
 import FriendList from "./_home/friend-list";
 import { auth } from "@/lib/auth";
@@ -82,7 +82,7 @@ export default async function HomeLayout({
             <CardContent className="flex flex-col gap-4">
               <div className="flex gap-2 items-center justify-start">
                 <Avatar size="lg">
-                  <AvatarImage src={fallbackAvatar} />
+                  <AvatarImage src={fallbackMyAvatar} />
                 </Avatar>
                 <div className="flex flex-col">
                   <p className="font-semibold">John Doe</p>
