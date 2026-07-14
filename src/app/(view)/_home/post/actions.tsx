@@ -156,14 +156,14 @@ export default function Actions({
             <HugeiconsIcon icon={SentIcon} />
           </Button>
         </div>
-        <button
+        {/* <button
           type="button"
           className="text-xs py-2 text-muted-foreground hover:text-primary my-2"
           onClick={() => setIsPostOpen(true)}
         >
           View Comments (4)
-        </button>
-        <Message>
+        </button> */}
+        {/* <Message>
           <MessageAvatar>
             <Avatar>
               <AvatarImage src={fallbackMyAvatar} alt="user#1" />
@@ -190,7 +190,7 @@ export default function Actions({
               </BubbleContent>
             </Bubble>
           </MessageContent>
-        </Message>
+        </Message> */}
       </CardContent>
       <Dialog open={isPostOpen} onOpenChange={setIsPostOpen}>
         <DialogContent className="min-w-[60dvw] max-h-[90dvh] overflow-y-auto ">

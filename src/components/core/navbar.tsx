@@ -74,7 +74,7 @@ export default function Navbar({
                 <AvatarImage src={me?.image || fallbackMyAvatar} />
                 <AvatarFallback>UI</AvatarFallback>
               </Avatar>{" "}
-              Raven
+              {me?.name.split(" ")[0] || "User"}{" "}
               <HugeiconsIcon size="18" icon={ChevronDown} />
             </PopoverTrigger>
             <PopoverContent align="end" side="bottom" sideOffset={5}>

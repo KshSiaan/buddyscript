@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 import DetectRoute from "./detect-route";
 import SideCovers from "./side-covers";
+import SOcialAuth from "./social-auth";
 export const metadata: Metadata = {
   title: "Buddyscript - Authentication",
   description: "Log in or sign up to access Buddyscript",
@@ -67,10 +68,9 @@ export default function Layout({
             </Suspense>
           </CardHeader>
           <CardContent className="flex flex-col gap-6 justify-center items-center py-6 pt-0!">
-            <Button variant="outline" className="w-full">
-              <FcGoogle />
-              Sign-in with google
-            </Button>
+            <Suspense>
+              <SOcialAuth />
+            </Suspense>
             <div className="flex justify-center w-full items-center overflow-clip gap-4 text-muted-foreground">
               <Separator className="w-full border-muted border" />
               <span>or</span>

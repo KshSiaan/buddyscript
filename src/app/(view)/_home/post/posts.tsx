@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-import { useGetPosts } from "@/hooks/api/post";
+import { useDeletePost, useGetPosts } from "@/hooks/api/post";
 import { fallbackMyAvatar, timeAgoGenerate } from "@/lib/extra";
 import { MoreVerticalCircle01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -23,6 +23,7 @@ import { useSession } from "@/lib/auth-client";
 export default function Posts() {
   const { data: session } = useSession();
   const { data, isPending, isError, error, isRefetching } = useGetPosts();
+  const { mutate: deletePost, isPending: isDeletePending } = useDeletePost();
 
   if (isPending) {
     return (
@@ -65,7 +66,13 @@ export default function Posts() {
               <HugeiconsIcon icon={MoreVerticalCircle01Icon} />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                disabled={isDeletePending}
+                onClick={() => deletePost(post.id)}
+              >
+                Delete
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )}
