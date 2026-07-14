@@ -28,13 +28,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Image from "next/image";
-import { useCreatePost } from "@/lib/api/post";
-import { clientCompressImage } from "@/lib/extra";
+import { useCreatePost } from "@/hooks/api/post";
+import { clientCompressImage, fallbackMyAvatar } from "@/lib/extra";
 import { Switch } from "@/components/ui/switch";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 export default function CreatePost() {
+  const { data: session } = useSession();
   const [expanded, setExpanded] = React.useState(false);
   const [submitState, setSubmitState] = React.useState<
     "idle" | "compressing" | "submitting"
@@ -129,11 +131,7 @@ export default function CreatePost() {
           <div className="p-4 bg-card rounded-lg w-full hover:border-primary border-2 border-transparent transition-colors cursor-pointer">
             <div className="flex gap-2 items-center justify-start">
               <Avatar size="lg">
-                <AvatarImage
-                  src={
-                    "https://api.dicebear.com/10.x/lorelei/svg?backgroundColor=ffffff&seed=Felix"
-                  }
-                />
+                <AvatarImage src={session?.user?.image ?? fallbackMyAvatar} />
                 <AvatarFallback>UI</AvatarFallback>
               </Avatar>
               <div className="text-muted-foreground text-sm">
@@ -175,14 +173,10 @@ export default function CreatePost() {
         <div className="flex flex-col h-full p-6">
           <div className="flex items-center gap-2 justify-start border-b pb-4 mb-4">
             <Avatar size="lg">
-              <AvatarImage
-                src={
-                  "https://api.dicebear.com/10.x/lorelei/svg?backgroundColor=ffffff&seed=Felix"
-                }
-              />
+              <AvatarImage src={session?.user?.image ?? fallbackMyAvatar} />
               <AvatarFallback>UI</AvatarFallback>
             </Avatar>{" "}
-            RAVEN
+            {session?.user?.name ?? "User"}
           </div>
           <textarea
             className="border-0! flex-1 ring-0! outline-0! resize-none scroll-fade-y scrollbar-none bg-transparent w-full text-sm font-light"

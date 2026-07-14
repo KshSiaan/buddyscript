@@ -24,7 +24,35 @@ export async function clientCompressImage(file: File, maxSize: number) {
   }
 }
 
+export function rejectResponse({
+  error,
+  additional_error,
+  status = 400,
+}: {
+  error: string;
+  additional_error?: any;
+  status?: number;
+}) {
+  return Response.json(
+    { ok: false, message: error, error: additional_error },
+    { status },
+  );
+}
 
-export function rejectResponse({ error, additional_error, status = 400 }:{ error: string; additional_error?: any; status?: number }) {
-  return Response.json({ ok:false, message:error,error:additional_error}, { status });
+export function timeAgoGenerate(date: Date) {
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  let timeAgo = "";
+  if (diffInSeconds < 60) {
+    timeAgo = `${diffInSeconds} seconds ago`;
+  } else if (diffInSeconds < 3600) {
+    timeAgo = `${Math.floor(diffInSeconds / 60)} minutes ago`;
+  } else if (diffInSeconds < 86400) {
+    timeAgo = `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  } else {
+    timeAgo = `${Math.floor(diffInSeconds / 86400)} days ago`;
+  }
+
+  return timeAgo;
 }

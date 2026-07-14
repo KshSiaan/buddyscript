@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,6 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   InputGroup,
@@ -19,7 +19,8 @@ import {
   MessageContent,
   MessageHeader,
 } from "@/components/ui/message";
-import { fallbackAvatar } from "@/lib/extra";
+import { useGetPosts } from "@/hooks/api/post";
+import { fallbackAvatar, fallbackMyAvatar, timeAgoGenerate } from "@/lib/extra";
 import {
   Comment03Icon,
   Image02Icon,
@@ -31,22 +32,26 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 
-export default async function Posts() {
-  return (
-    <Card>
+export default function Posts() {
+  const { data, isPending, isError, error } = useGetPosts();
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+
+  return data?.data?.map((post) => (
+    <Card key={post.id}>
       <CardHeader className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Avatar size="lg">
-            <AvatarImage
-              src={
-                "https://api.dicebear.com/10.x/lorelei/svg?backgroundColor=ffffff&seed=Felix"
-              }
-            />
+            <AvatarImage src={post.author.image ?? fallbackMyAvatar} />
             <AvatarFallback>UI</AvatarFallback>
           </Avatar>{" "}
           <div className="">
-            <h4>Raven</h4>
-            <p className="text-xs text-muted-foreground">5 mins ago</p>
+            <h4>{post.author.name}</h4>
+            <p className="text-xs text-muted-foreground">
+              {timeAgoGenerate(new Date(post.createdAt))}
+            </p>
           </div>
         </div>
         <Button variant="ghost" size="icon-sm">
@@ -55,30 +60,27 @@ export default async function Posts() {
       </CardHeader>
       <CardContent>
         <div className="text-sm" id="text_content">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate
-          dolore id sint asperiores repudiandae cumque, earum perferendis
-          voluptatibus dolores iste dignissimos vitae? Sint eum voluptatum
-          illum! Debitis suscipit dolorem a.
+          {post.text}
         </div>
         <div className="" id="image_content"></div>
       </CardContent>
       <CardFooter className="grid grid-cols-3 gap-4">
         <button
           type="button"
-          className="w-full p-2 flex justify-center items-center gap-2 text-xs font-light text-muted-foreground hover:text-primary hover:bg-primary/10  transition-colors rounded-lg"
+          className="w-full p-2 flex justify-center items-center gap-2 text-xs font-light text-muted-foreground hover:text-primary  transition-colors rounded-lg"
         >
           <HugeiconsIcon icon={ThumbsUpEllipseIcon} size={20} /> Like
         </button>
         <button
           type="button"
-          className="w-full p-2 flex justify-center items-center gap-2 text-xs font-light text-muted-foreground hover:text-accent-foreground hover:bg-accent-foreground/10 transition-colors rounded-lg"
+          className="w-full p-2 flex justify-center items-center gap-2 text-xs font-light text-muted-foreground hover:text-accent-foreground transition-colors rounded-lg"
         >
           <HugeiconsIcon icon={Comment03Icon} size={20} />
           Comment
         </button>
         <button
           type="button"
-          className="w-full p-2 flex justify-center items-center gap-2 text-xs font-light text-muted-foreground hover:text-yellow-600 hover:bg-yellow-600/10 transition-colors rounded-lg"
+          className="w-full p-2 flex justify-center items-center gap-2 text-xs font-light text-muted-foreground hover:text-yellow-600 transition-colors rounded-lg"
         >
           <HugeiconsIcon icon={Share01Icon} size={20} /> Share
         </button>
@@ -150,5 +152,5 @@ export default async function Posts() {
         </Message>
       </CardContent>
     </Card>
-  );
+  ));
 }

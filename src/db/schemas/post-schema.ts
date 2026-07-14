@@ -14,6 +14,7 @@ export const post = pgTable(
   {
     id: text("id").primaryKey(),
     text: text("text").notNull(),
+    is_private: boolean("is_private").default(false),
     images: text("images").array(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
