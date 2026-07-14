@@ -64,15 +64,21 @@ export const postService = {
     const result = await response.json();
     return result;
   },
-  getComments: async (post_id: string): Promise<ApiResponse<{
-  id: string
-  parentId?: string;
-  postId: string
-  userId: string
-  text: string
-  createdAt: string
-  user: Auth["$Infer"]["Session"]["user"]
-}[]>> => {
+  getComments: async (
+    post_id: string,
+  ): Promise<
+    ApiResponse<
+      {
+        id: string;
+        parentId?: string;
+        postId: string;
+        userId: string;
+        text: string;
+        createdAt: string;
+        user: Auth["$Infer"]["Session"]["user"];
+      }[]
+    >
+  > => {
     const response = await fetch(`${base_api_url}/post/comment/${post_id}`);
     const result = await response.json();
     return result;

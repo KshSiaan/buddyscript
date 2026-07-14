@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSession } from "@/lib/auth-client";
+import { gooeyToast } from "goey-toast";
 
 export default function Posts() {
   const { data: session } = useSession();
@@ -69,7 +70,16 @@ export default function Posts() {
               <DropdownMenuItem
                 variant="destructive"
                 disabled={isDeletePending}
-                onClick={() => deletePost(post.id)}
+                onClick={() =>
+                  deletePost(post.id, {
+                    onError: (err) => {
+                      gooeyToast.error(err?.message ?? "Failed to delete post");
+                    },
+                    onSuccess: (res) => {
+                      gooeyToast.success("Post deleted successfully");
+                    },
+                  })
+                }
               >
                 Delete
               </DropdownMenuItem>
