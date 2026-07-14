@@ -1,11 +1,11 @@
 import { comments, likes, post, user } from "@/db/schema";
-import { eq,and,exists, getTableColumns, desc, count } from "drizzle-orm";
+import { eq, and, exists, getTableColumns, desc, count } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { rejectResponse } from "@/lib/extra";
 import { createSupabaseStorageClient } from "@/lib/storage/supabase";
 import { NextRequest } from "next/server";
-
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({
@@ -17,21 +17,25 @@ export async function POST(request: Request) {
   }
 
   const body = await request.formData();
-  const text = body.get("text");
+  const rawText = body.get("text");
+
+  const text = typeof rawText === "string" ? rawText.trim() : "";
   const is_private = body.get("is_private");
   const images = body.getAll("images") as File[];
 
-  if (!text || typeof text !== "string") {
-    return rejectResponse({ error: "Invalid text" });
-  }
-  if (text.length > 2000) {
-    return rejectResponse({
-      error: "Text is too long, maximum length is 2000 characters",
-    });
+  if (images.length > 5) {
+    return rejectResponse({ error: "You can upload a maximum of 5 images" });
   }
   for (const image of images) {
     if (!(image instanceof File)) {
       return rejectResponse({ error: "Invalid image file" });
+    }
+  }
+  if (images.length === 0 || !images) {
+    if (!text || typeof text !== "string" || text.trim() === "") {
+      return rejectResponse({
+        error: "Post text or Image is required",
+      });
     }
   }
 
@@ -96,10 +100,12 @@ export async function GET(request: NextRequest) {
   if (!session?.session) {
     return rejectResponse({ error: "Unauthorized", status: 401 });
   }
-
+  const storage = createSupabaseStorageClient().storage;
   try {
-    const whereCondition =request.nextUrl.searchParams.get("private") === "true" ? and(eq(post.authorId, session.user.id),eq(post.is_private, true)) : eq(post.is_private, false);
-
+    const whereCondition =
+      request.nextUrl.searchParams.get("private") === "true"
+        ? and(eq(post.authorId, session.user.id), eq(post.is_private, true))
+        : eq(post.is_private, false);
 
     const posts = await db
       .select({
@@ -107,19 +113,17 @@ export async function GET(request: NextRequest) {
         author: getTableColumns(user),
         likes: count(likes.id),
         isLiked: exists(
-      db
-        .select({ id: likes.id })
-        .from(likes)
-        .where(
-          and(
-            eq(likes.postId, post.id),
-            eq(likes.userId, session.user.id)
-          )
-        ),
+          db
+            .select({ id: likes.id })
+            .from(likes)
+            .where(
+              and(eq(likes.postId, post.id), eq(likes.userId, session.user.id)),
+            ),
         ),
         commentCount: count(comments.id),
       })
-      .from(post).where(whereCondition)
+      .from(post)
+      .where(whereCondition)
       .leftJoin(user, eq(user.id, post.authorId))
       .leftJoin(likes, eq(likes.postId, post.id))
       .leftJoin(comments, eq(comments.postId, post.id))
@@ -127,11 +131,17 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(post.createdAt))
       .limit(48);
 
-
+    const deliverablePosts = posts.map((post) => ({
+      ...post,
+      images: (post.images ?? []).map(
+        (image) =>
+          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${image}`,
+      ),
+    }));
     return Response.json({
       ok: true,
       message: "Posts fetched successfully",
-      data: posts,
+      data: deliverablePosts,
     });
   } catch (err) {
     return rejectResponse({
@@ -151,5 +161,4 @@ export async function DELETE(request: NextRequest) {
   }
 
   const postId = request.nextUrl.searchParams.get("postId");
-
 }
