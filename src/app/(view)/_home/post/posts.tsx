@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSession } from "@/lib/auth-client";
 import { gooeyToast } from "goey-toast";
+import Image from "next/image";
 
 export default function Posts() {
   const { data: session } = useSession();
@@ -91,6 +92,20 @@ export default function Posts() {
         <div className="text-sm line-clamp-4" id="text_content">
           {post.text}
         </div>
+        {!!post?.images?.length && (
+          <div className="grid grid-cols-3">
+            {post.images.map((image, index) => (
+              <Image
+                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                key={index}
+                src={image}
+                alt={`Post image ${index}`}
+                height={500}
+                width={500}
+              />
+            ))}
+          </div>
+        )}
         <div className="" id="image_content"></div>
       </CardContent>
       <Actions post={post} isRefetching={isRefetching} />
