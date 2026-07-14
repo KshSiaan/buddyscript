@@ -47,6 +47,7 @@ export const useLikePost = () => {
 };
 
 export const useCreateComment = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["createComment"],
     mutationFn: async (data: {
@@ -55,6 +56,9 @@ export const useCreateComment = () => {
       comment_text: string;
     }) => {
       return postService.createComment(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getComments"] });
     },
   });
 };
